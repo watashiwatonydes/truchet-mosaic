@@ -5,8 +5,12 @@ package
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.events.KeyboardEvent;
+	import flash.events.TimerEvent;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.ui.Keyboard;
 	import flash.utils.Timer;
 	
 	import tiles.typeA.Pattern1;
@@ -31,7 +35,6 @@ package
 		private var _container:Bitmap;
 		private var _snapshotContainer:Sprite;
 
-		private var _iterationTimer:Timer;
 		private var _snapshotTimer:Timer;
 		
 		private var LEFT:int 					= 0;
@@ -47,6 +50,11 @@ package
 
 		private const SOURCE_RECT:Rectangle 	= new Rectangle(0, 0, 0, 0);
 		private const DEST_POINT:Point 			= new Point(0, 0);
+		private var MATRIX_ROTATION:int;
+		private var MATRIX_SCALE_X:Number;
+		private var MATRIX_SCALE_Y:Number;
+		private var BITMAP_SCROLL:int			= 10;
+		private var SNAPSHOT_ALPHA:Number		= 0.0;
 		
 		
 		public function TruchetMosaic()
@@ -54,29 +62,40 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align	 	= StageAlign.TOP_LEFT;
 
-			NCOL = NLINE 	= 192;
+			NCOL = NLINE 	= 256;
 			FLIP_DURATION 	= 3;
+			MATRIX_ROTATION = 0;
+			MATRIX_SCALE_X	= 1;
+			MATRIX_SCALE_Y	= 1;
 			
 			_patterns 		= new Vector.<BitmapData>( 8, true) ;
 			_truchetMatrix 	= new Vector.<Vector.<int>>(NLINE, true);
 			_randomized		= new Vector.<RandomizedChars>( NLINE, true );
 
-			_container		= new Bitmap();
-			_container.x 	= 50; 
-			_container.y 	= 50; 
+			_container				= new Bitmap();
+			_container.x 			= 40; 
+			_container.y 			= 40; 
 			this.addChild( _container );
+			
+			_snapshotContainer		= new Sprite();
+			_snapshotContainer.x 	= stage.stageWidth * .5; 
+			_snapshotContainer.y 	= 40; 
+			this.addChild( _snapshotContainer );
 		
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			
 			step();
 		}
-			
+		
 		private function step():void 
 		{
-			var size:Number 	= Math.min( stage.stageWidth, stage.stageHeight ) - 100;
+			// var size:Number 	= Math.min( stage.stageWidth, stage.stageHeight ) - 100;
+			var size:Number 	= stage.stageHeight - 40;
 			
 			PATTERN_WIDTH 		= size/NLINE;
 			PATTERN_HEIGHT 		= size/NLINE;
 			
-			CANVAS				= new BitmapData( NCOL * PATTERN_WIDTH, NLINE * PATTERN_HEIGHT, false, 0x000000 );
+			CANVAS				= new BitmapData( NCOL * PATTERN_WIDTH, NLINE * PATTERN_HEIGHT, true, 0x00000000 );
 			
 			_container.bitmapData = CANVAS;
 			
@@ -173,7 +192,29 @@ package
 			}
 		}
 		
+		protected function takeSnapshot():void
+		{
+			var w:Number 			= CANVAS.width;
+			var h:Number			= CANVAS.height;
+			
+			var buffer:BitmapData 	= new BitmapData( w, h, true, 0x00FFFFFF );
+			buffer.draw( CANVAS, null, null, null, null, true );
+			
+			var snapshot:Bitmap 	= new Bitmap( buffer );
+			snapshot.alpha 			= SNAPSHOT_ALPHA;
+			
+			_snapshotContainer.addChildAt( snapshot, 0 );
+			
+			SNAPSHOT_ALPHA	+= 0.05;
+		}
 		
+		protected function onKeyDown(event:KeyboardEvent):void
+		{
+			if ( event.keyCode == Keyboard.SPACE )
+			{
+				takeSnapshot();
+			}
+		}
 		
 				
 	}
