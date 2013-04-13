@@ -18,9 +18,9 @@ package {
 		private var _lineIndex:int;
 		private var _timerDelay:Number;
 		
-		private var firstTime:Boolean = true;
-		private var FRAMERATE:Number = 10;
-		private const _charSet:String = "01234567";
+		private var firstTime:Boolean 	= true;
+		private var FRAMERATE:Number 	= 10;
+		private const _charSet:String 	= "01234567";
 		
 		public function RandomizedChars( lineIndex:int, timerDelay:Number, pFramerate:Number )
 		{
@@ -93,7 +93,11 @@ package {
 			dispatchEvent( ev );
 		}
 		
-		
+		public function stop():void
+		{
+			_animationTimer.removeEventListener( TimerEvent.TIMER , updateText );
+			_animationTimer.stop();
+		}
 		
 		
 

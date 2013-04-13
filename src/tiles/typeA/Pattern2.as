@@ -12,7 +12,7 @@ package tiles.typeA
 			
 			var canvas:Shape = new Shape();
 			
-			canvas.graphics.beginFill( 0x11111111 );
+			canvas.graphics.beginFill( 0x000000 );
 			canvas.graphics.lineTo( width, height );
 			canvas.graphics.lineTo( 0, height );
 			canvas.graphics.lineTo( 0, 0 );
