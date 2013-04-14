@@ -8,6 +8,7 @@ package
 		public static var UPDATE:String = "update";
 		public var text:String = "";
 		public var lineIndex:int;
+		public var colIndex:int;
 		
 		public function TextUpdateEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

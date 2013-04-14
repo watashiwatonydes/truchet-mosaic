@@ -18,7 +18,7 @@ package tiles.typeA
 			canvas.graphics.lineTo( 0, 0 );
 			canvas.graphics.endFill();
 			
-			canvas.graphics.beginFill( 0x111111 );
+			canvas.graphics.beginFill( 0x000000 );
 			canvas.graphics.lineTo( width, 0 );
 			canvas.graphics.lineTo( width, height );
 			canvas.graphics.lineTo( 0, 0 );

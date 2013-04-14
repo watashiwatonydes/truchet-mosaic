@@ -15,16 +15,19 @@ package {
 		private var _duration:Number;
 		private var _startTime:Number;
 		private var _animationTimer:Timer;
-		private var _lineIndex:int;
 		private var _timerDelay:Number;
 		
 		private var firstTime:Boolean = true;
 		private var FRAMERATE:Number = 10;
 		private const _charSet:String = "01234567";
+
+		private var _lineIndex:int;
+		private var _colIndex:int;
 		
-		public function RandomizedChars( lineIndex:int, timerDelay:Number, pFramerate:Number )
+		public function RandomizedChars( lineIndex:int, colIndex:int, timerDelay:Number, pFramerate:Number )
 		{
 			_lineIndex	= lineIndex;
+			_colIndex	= colIndex;
 			_timerDelay = timerDelay;
 			FRAMERATE 	= pFramerate; 
 		}
@@ -89,7 +92,8 @@ package {
 			// Notify
 			var ev:TextUpdateEvent = new TextUpdateEvent( TextUpdateEvent.UPDATE );
 			ev.text = nText;
-			ev.lineIndex = _lineIndex
+			ev.lineIndex = _lineIndex;
+			ev.colIndex = _colIndex
 			dispatchEvent( ev );
 		}
 		

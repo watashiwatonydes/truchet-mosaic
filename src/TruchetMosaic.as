@@ -54,8 +54,9 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align	 	= StageAlign.TOP_LEFT;
 
-			NCOL = NLINE 	= 192;
-			FLIP_DURATION 	= 3;
+			NCOL 	= 12;
+			NLINE	= 12;
+			FLIP_DURATION 	= .6;
 			
 			_patterns 		= new Vector.<BitmapData>( 8, true) ;
 			_truchetMatrix 	= new Vector.<Vector.<int>>(NLINE, true);
@@ -79,7 +80,6 @@ package
 			CANVAS				= new BitmapData( NCOL * PATTERN_WIDTH, NLINE * PATTERN_HEIGHT, false, 0x000000 );
 			
 			_container.bitmapData = CANVAS;
-			
 			
 			SOURCE_RECT.width	= PATTERN_WIDTH; 
 			SOURCE_RECT.height	= PATTERN_HEIGHT; 
@@ -119,8 +119,13 @@ package
 		protected function draw():void
 		{
 			var flipString:String;
-			var i:int;
+			var i:int, k:int;
 			var index:int;
+			var randomlength:int;
+			var randomizableLength:int;
+			var colOffset:int;
+			var lengthAvailable:int;
+			var bounds:int;
 			var lineIndexes:Array = [ ];
 			
 			for  ( i = 0 ; i < NLINE ; i++ )
@@ -130,22 +135,31 @@ package
 
 			while ( lineIndexes.length > 0 )
 			{
-				index 					= Math.floor(Math.random() * lineIndexes.length);
-				i 						= lineIndexes[ index ]; 
+				index 						= Math.floor(Math.random() * lineIndexes.length);
+				i 							= lineIndexes[ index ]; 
 				
 				lineIndexes.splice(index, 1);
 				
-				FLIP_DELAY 				= int( Math.random() * 1000 ); 
-				FLIP_FRAMERATE 			= 10 + int( Math.random() * 20 ); 
+				FLIP_DELAY 					= int( Math.random() * 1000 ); 
+				FLIP_FRAMERATE 				= 10 + int( Math.random() * 20 ); 
+
+				randomizableLength	= NCOL;
+				colOffset			= Math.floor(Math.random() * (randomizableLength));
+				lengthAvailable		= NCOL - colOffset + 1;
 				
-				var rc:RandomizedChars	= new RandomizedChars( i, FLIP_DELAY, FLIP_FRAMERATE );
+				randomlength		= Math.floor(Math.random() * (lengthAvailable));
 				
+				flipString 					= "";
+				bounds 				= colOffset + randomlength;
+				
+				for ( k = colOffset ; k < bounds ; k++ )
+				{
+					flipString 				+= String(_truchetMatrix[ i ][ k ]);
+				}
+				
+				var rc:RandomizedChars	= new RandomizedChars( i, colOffset, FLIP_DELAY, FLIP_FRAMERATE );
 				rc.addEventListener(TextUpdateEvent.UPDATE, onTextUpdate);
-				
 				_randomized[ i ] = rc;
-				
-				flipString 				= String(_truchetMatrix[ i ].join( "" ));
-				
 				rc.flipTo( 0, flipString, FLIP_DURATION );
 			}
 		}
@@ -154,11 +168,14 @@ package
 		{
 			var buffer:String 		= event.text;
 			var nLin:int 			= event.lineIndex;
+			var nCol:int 			= event.colIndex;
 			var ln:int 				= buffer.length;
+			
 			
 			var pattern:BitmapData;
 			var index:int;
 			var j:int = 0;
+			var bounds:int			= nCol + ln;
 			
 			for ( j = 0 ; j < ln ; j++ )
 			{
@@ -166,7 +183,7 @@ package
 				
 				pattern 			= _patterns[ index ];
 				
-				DEST_POINT.x 		= PATTERN_WIDTH * j;
+				DEST_POINT.x 		= PATTERN_WIDTH * (nCol + j);
 				DEST_POINT.y 		= PATTERN_HEIGHT * nLin;
 				
 				CANVAS.copyPixels( pattern, SOURCE_RECT, DEST_POINT );
