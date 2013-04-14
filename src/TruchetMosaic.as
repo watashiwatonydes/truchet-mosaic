@@ -71,8 +71,8 @@ package
 			_container				= new Sprite();
 		
 			_snapshotContainer 		= new Sprite();
-			_snapshotContainer.x 	= stage.stageWidth * .5;
-			_snapshotContainer.y 	= stage.stageHeight * .5;
+			_snapshotContainer.x 	= 10;
+			_snapshotContainer.y 	= int(stage.stageHeight * .25);
 			this.addChild( _snapshotContainer );
 
 			
@@ -100,20 +100,38 @@ package
 		protected function takeSnapshot(event:TimerEvent):void
 		{
 			var scale:Number 		= .5;
-			var w:Number 			= (NCOL * PATTERN_WIDTH + 60) * scale;
-			var h:Number			= (NLINE * PATTERN_HEIGHT + 60) * scale;
+			var w:Number 			= (NCOL * PATTERN_WIDTH) * scale;
+			var h:Number			= (NLINE * PATTERN_HEIGHT) * scale;
 			
-			var buffer:BitmapData 	= new BitmapData( w, h, false, 0xFFFFFF );
+			var buffer:BitmapData 	= new BitmapData( w, h, false, 0x000000 );
 			var m:Matrix 			= new Matrix();
-			m.translate( 30, 30 );
+			m.translate( 0, 0 );
 			m.scale( scale, scale );
 			buffer.draw( _container, m, null, null, null, true );
 
 			var snapshot:Bitmap 	= new Bitmap( buffer );
-			snapshot.alpha 			= .1;
+			snapshot.alpha 			= .25;
 			snapshot.rotation		= SNAPSHOT_ROTATION;
 			_snapshotContainer.addChild( snapshot );
 		
+			switch( snapshot.rotation % 360 )
+			{
+				case 90:
+						snapshot.x += 2 * w + 10; 
+					break;
+				case 180:
+					snapshot.x += 3 * w + 20; 
+					snapshot.y += h; 
+					break;
+				case -90:
+					snapshot.x += 3 * w + 30; 
+					snapshot.y += h; 
+					break;
+			}
+			
+			
+			trace ( snapshot.rotation % 360 );
+			
 			SNAPSHOT_ROTATION 		+= 90;
 			
 			if(SNAPSHOT_ROTATION == 1440)
